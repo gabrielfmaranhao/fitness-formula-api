@@ -21,3 +21,4 @@ class Workout(models.Model):
     day = models.CharField(choices=DayChoices.choices)
     title = models.CharField(null=True)
     description = models.CharField(null=True)
+    sheet = models.ForeignKey('sheet.Sheet', on_delete=models.CASCADE, related_name="workouts")

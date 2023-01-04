@@ -5,7 +5,7 @@ import ipdb
 
 
 class UserSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
+    id = serializers.UUIDField(read_only=True)
     username = serializers.CharField(
         max_length=20,
         validators=[
@@ -47,7 +47,7 @@ class UserSerializer(serializers.Serializer):
 
 
 class TrainerSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
+    id = serializers.UUIDField(read_only=True)
     username = serializers.CharField(
         max_length=20,
         validators=[

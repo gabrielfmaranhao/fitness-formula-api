@@ -1,7 +1,7 @@
 from django.db import models
-
+import uuid
 class Workout_exercise(models.Model):
-    id = models.UUIDField()
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     equipment = models.CharField(null=True)
     description = models.CharField(null=True)
     sets = models.PositiveIntegerField()
@@ -10,5 +10,5 @@ class Workout_exercise(models.Model):
     exercise = models.ForeignKey('workout_exercise.Exercise', on_delete=models.CASCADE, related_name="workout_exercises")
 
 class Exercise(models.Model):
-    id = models.UUIDField()
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     title = models.CharField()

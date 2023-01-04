@@ -1,5 +1,5 @@
 from django.db import models
-
+import uuid
 class MuscleChoices(models.TextChoices):
     CHOICES_LEGS = "legs"
     CHOICES_ARMS = "arms"
@@ -16,7 +16,7 @@ class DayChoices(models.TextChoices):
     CHOICES_SATURDAY = "saturday"
     CHOICES_SUNDAY = "sunday"
 class Workout(models.Model):
-    id = models.UUIDField(primary_key=True)
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     muscle_group = models.CharField(choices=MuscleChoices.choices)
     day = models.CharField(choices=DayChoices.choices)
     title = models.CharField(null=True)

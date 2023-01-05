@@ -8,7 +8,13 @@ from django.db.models import Avg
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        exclude = ["groups", "user_permissions", "is_active"]
+        exclude = [
+            "groups",
+            "user_permissions",
+            "is_active",
+            "last_login",
+            "is_superuser",
+        ]
         read_only_fields = ["id", "is_superuser"]
         extra_kwargs = {"password": {"write_only": True}}
 
@@ -39,6 +45,12 @@ class TrainerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        exclude = ["groups", "user_permissions", "is_active"]
+        exclude = [
+            "groups",
+            "user_permissions",
+            "is_active",
+            "last_login",
+            "is_superuser",
+        ]
         read_only_fields = ["id", "is_superuser"]
         extra_kwargs = {"password": {"write_only": True}}

@@ -50,10 +50,10 @@ THIRD_PARTY_APPS = [
 MY_APPS = [
     "user",
     # "exercise",
-    # "overview",
+    "overview",
     "rating",
     # "report",
-    # "sheet",
+    "sheet",
     # "workout",
     # "workout_exercise",
 ]

@@ -1,23 +1,40 @@
 from django.shortcuts import render
+from rest_framework.generics import (RetrieveUpdateDestroyAPIView, CreateAPIView, ListAPIView, RetrieveAPIView,)
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.views import APIView, Request, Response, status
 from .models import Report
-from .permissions import IsUserReport
+from .permissions import IsUserReport, IsTrainerReport
+from .serializer import ReportSerializer
+from django.shortcuts import get_object_or_404
+
 # Create your views here.
-class ReportUserView(APIView):     
+class ReportUserView(ListAPIView):     
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsUserReport]
     
-    def get(self, request: Request) -> Response:
-        reports = Report.objects.all()
+    serializer_class = ReportSerializer
+    queryset = Report.objects.all()
 
-        serializer = ReportSerializer(reports, many=True)
+class OneReportUserView(RetrieveAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsUserReport]
 
-        return Response(serializer.data, status.HTTP_200_OK)
+    serializer_class = ReportSerializer
+    queryset = Report.objects.all()
 
-    def post(self, request: Request) -> Response:
-        serializer = ReportSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(owner=request.user)
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
 
-        return Response(serializer.data, status.HTTP_201_CREATED)
+        report = get_object_or_404(queryset, id=self.request.report.id)
+
+        self.check_object_permissions(self.request, report)
+
+        return report
+
+
+class ReportTrainerView(ListAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsTrainerReport]
+    
+    serializer_class = ReportSerializer
+    queryset = Report.objects.all()

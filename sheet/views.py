@@ -59,7 +59,7 @@ class SheetDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class WorkoutView(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsTrainer]
+    permission_classes = [IsAuthenticated, IsTrainer, IsSheetOwner]
 
     serializer_class = WorkoutSerializer
 
@@ -72,12 +72,10 @@ class WorkoutView(generics.ListCreateAPIView):
         student_id = self.kwargs["student_id"]
         student_obj = get_object_or_404(User, pk=student_id)
 
-        # exercises = serializer.validated_data.pop("exercises")
-
-        # workout_obj =
-
         student_sheet = Sheet.objects.filter(student_id=student_obj)
         student_sheet_exists = student_sheet.exists()
+
+        self.check_object_permissions(self.request, student_sheet.first())
 
         if student_sheet_exists is False:
             raise exceptions.NotFound("Training sheet not found.")

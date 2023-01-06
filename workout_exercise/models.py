@@ -9,10 +9,12 @@ class Workout_exercise(models.Model):
     sets = models.PositiveIntegerField()
     reps = models.PositiveIntegerField()
     workout = models.ForeignKey(
-        "workout.Workout", on_delete=models.CASCADE, related_name="workout"
+        "workout.Workout",
+        on_delete=models.CASCADE,
+        related_name="exercises",
     )
     exercise = models.ForeignKey(
         "exercise.Exercise",
         on_delete=models.CASCADE,
-        related_name="exercise",
+        related_name="workouts",
     )

@@ -53,7 +53,7 @@ MY_APPS = [
     "exercise",
     "overview",
     "rating",
-    # "report",
+    "report",
     "sheet",
     "workout",
     "workout_exercise",

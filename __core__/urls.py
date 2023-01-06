@@ -23,4 +23,5 @@ urlpatterns = [
     path("api/", include("rating.urls")),
     path("api/", include("sheet.urls")),
     path("api/", include("overview.urls")),
+    path("api/", include("report.urls")),
 ]

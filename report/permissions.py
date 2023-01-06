@@ -1,14 +1,13 @@
 from rest_framework import permissions
-from rest_framework.views import Request, View
-from .models import Report
-from ..user.models import User
-from ..sheet.models import Sheet
+from user.models import User
+
+import ipdb
+
 class IsUserReport(permissions.BasePermission):
     def has_object_permission(self, request, view, user: User) -> bool:  
-        if request.user == user and request.method in permissions.SAFE_METHODS:
-            return True 
+            return request.user == user
 
 class IsTrainerReport(permissions.BasePermission):
-    def has_object_permission(self, request, view, sheet: Sheet) -> bool:
-        return request.trainer == sheet
-        
+    def has_object_permission(self, request, view, user: User) -> bool:
+        return request.user.is_staff and request.user.id
+

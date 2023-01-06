@@ -1,35 +1,22 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from .models import User
-import ipdb
+from rating.models import Rating
+from django.db.models import Avg
 
 
-class UserSerializer(serializers.Serializer):
-    id = serializers.UUIDField(read_only=True)
-    username = serializers.CharField(
-        max_length=20,
-        validators=[
-            UniqueValidator(
-                queryset=User.objects.all(), message="username already taken."
-            )
-        ],
-    )
-    email = serializers.EmailField(
-        max_length=127,
-        validators=[
-            UniqueValidator(
-                queryset=User.objects.all(), message="email already registered."
-            )
-        ],
-    )
-    password = serializers.CharField(write_only=True)
-    first_name = serializers.CharField(max_length=150)
-    middle_name = serializers.CharField(max_length=150)
-    last_name = serializers.CharField(max_length=150)
-    cpf = serializers.CharField(max_length=11, min_length=11)
-    birthdate = serializers.DateField()
-    is_staff = serializers.BooleanField()
-    is_superuser = serializers.BooleanField(read_only=True)
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        exclude = [
+            "groups",
+            "user_permissions",
+            "is_active",
+            "last_login",
+            "is_superuser",
+        ]
+        read_only_fields = ["id", "is_superuser"]
+        extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
@@ -46,33 +33,24 @@ class UserSerializer(serializers.Serializer):
         return instance
 
 
-class TrainerSerializer(serializers.Serializer):
-    id = serializers.UUIDField(read_only=True)
-    username = serializers.CharField(
-        max_length=20,
-        validators=[
-            UniqueValidator(
-                queryset=User.objects.all(), message="username already taken."
-            )
-        ],
-    )
-    email = serializers.EmailField(
-        max_length=127,
-        validators=[
-            UniqueValidator(
-                queryset=User.objects.all(), message="email already registered."
-            )
-        ],
-    )
-    password = serializers.CharField(write_only=True)
-    first_name = serializers.CharField(max_length=150)
-    middle_name = serializers.CharField(max_length=150)
-    last_name = serializers.CharField(max_length=150)
-    cpf = serializers.CharField(max_length=11, min_length=11)
-    birthdate = serializers.DateField()
-    is_staff = serializers.BooleanField()
-    is_superuser = serializers.BooleanField(read_only=True)
+class TrainerSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
 
     def get_rating(self, obj):
-        ...
+        rating = Rating.objects.filter(trainer=obj).aggregate(avg_rating=Avg("stars"))[
+            "avg_rating"
+        ]
+
+        return round(rating, 1)
+
+    class Meta:
+        model = User
+        exclude = [
+            "groups",
+            "user_permissions",
+            "is_active",
+            "last_login",
+            "is_superuser",
+        ]
+        read_only_fields = ["id", "is_superuser"]
+        extra_kwargs = {"password": {"write_only": True}}

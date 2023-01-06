@@ -50,13 +50,13 @@ THIRD_PARTY_APPS = [
 
 MY_APPS = [
     "user",
-    # "exercise",
+    "exercise",
     "overview",
     "rating",
     # "report",
     "sheet",
-    # "workout",
-    # "workout_exercise",
+    "workout",
+    "workout_exercise",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + MY_APPS

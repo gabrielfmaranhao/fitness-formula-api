@@ -41,7 +41,7 @@ class TrainerSerializer(serializers.ModelSerializer):
             "avg_rating"
         ]
 
-        return round(rating, 1)
+        return round(rating, 1) if rating else "This professional has no ratings."
 
     class Meta:
         model = User

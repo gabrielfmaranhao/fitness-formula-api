@@ -6,6 +6,8 @@ from django.db.models import Avg
 
 
 class UserSerializer(serializers.ModelSerializer):
+    cpf = serializers.CharField(min_length=11, max_length=11)
+
     class Meta:
         model = User
         exclude = [
@@ -35,6 +37,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class TrainerSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
+    cpf = serializers.CharField(min_length=11, max_length=11)
 
     def get_rating(self, obj):
         rating = Rating.objects.filter(trainer=obj).aggregate(avg_rating=Avg("stars"))[

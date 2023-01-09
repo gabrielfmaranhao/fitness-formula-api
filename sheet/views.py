@@ -10,24 +10,6 @@ from .serializers import SheetSerializer
 from .models import Sheet
 import ipdb
 
-# Create your views here.
-class SheetView(generics.CreateAPIView):
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsTrainer]
-
-    serializer_class = SheetSerializer
-
-    def perform_create(self, serializer):
-        student_id = self.kwargs["id"]
-        student_obj = get_object_or_404(User, pk=student_id)
-
-        student_sheet = Sheet.objects.filter(student_id=student_obj).exists()
-
-        if student_sheet:
-            Sheet.objects.get(student_id=student_obj).delete()
-
-        serializer.save(trainer=self.request.user, student=student_obj)
-
 
 class SheetSelfView(generics.RetrieveAPIView):
     authentication_classes = [JWTAuthentication]
@@ -40,7 +22,7 @@ class SheetSelfView(generics.RetrieveAPIView):
         return get_object_or_404(self.queryset, student_id=self.request.user)
 
 
-class SheetDetailView(generics.RetrieveUpdateDestroyAPIView):
+class SheetDetailView(generics.CreateAPIView, generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, IsTrainer]
 
@@ -49,6 +31,17 @@ class SheetDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return Sheet.objects.filter(trainer_id=self.request.user)
+
+    def perform_create(self, serializer):
+        student_id = self.kwargs["student_id"]
+        student_obj = get_object_or_404(User, pk=student_id)
+
+        student_sheet = Sheet.objects.filter(student_id=student_obj).exists()
+
+        if student_sheet:
+            Sheet.objects.get(student_id=student_obj).delete()
+
+        serializer.save(trainer=self.request.user, student=student_obj)
 
     def perform_update(self, serializer):
         student_id = self.kwargs["student_id"]

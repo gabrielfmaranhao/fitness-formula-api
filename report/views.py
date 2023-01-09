@@ -1,13 +1,15 @@
-from rest_framework.generics import (ListAPIView, RetrieveAPIView)
+from rest_framework.generics import (ListAPIView)
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import Report
+from user.models import User
 from .permissions import IsUserReport, IsTrainerReport
 from .serializer import ReportSerializer
 from django.shortcuts import get_object_or_404
-from rest_framework import generics
 from rest_framework.views import APIView, Request, Response, status
+import ipdb
+from rest_framework import generics, exceptions
 
-# Create your views here.
+
 class ReportUserView(APIView):     
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsTrainerReport]
@@ -20,32 +22,51 @@ class ReportUserView(APIView):
 
         return Response(serializer.data, status.HTTP_200_OK)
 
-class OneReportUserView(APIView):
+class OneReportUserView(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsUserReport, IsTrainerReport]
 
-    def get(self, request: Request, id) -> Response:
-        report = Report.objects.get(id = id)
-        self.check_object_permissions(request, report)
-        serializer = ReportSerializer(report)
-        
-        if self.authentication_classes == False:
-                        return Response(
-                        {"detail": "Authentication credentials were not provided."}, status.HTTP_401_UNAUTHORIZED
-                        )
-        
-        return Response(serializer.data, status.HTTP_200_OK)
+    serializer_class = ReportSerializer
 
-    def post(self, request: Request, user_id) -> Response:
-        
-        report_obj = Report.objects.get(user_id = user_id)
+    def get_queryset(self):
+        return Report.objects.filter(
+            report_student=self.kwargs["students_id"], report_trainer=self.request.user
+        )
 
-        self.check_object_permissions(request, report_obj)
-        serializer = ReportSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(report = report_obj)
+    def perform_create(self, serializer):
+        student_id = self.kwargs["student_id"]
         
-        return Response(serializer.data, status.HTTP_201_CREATED)
+        student_obj = get_object_or_404(User, id=student_id)
+        
+        student_report = Report.objects.filter(student_id = student_obj)
+        # student_report_exists = student_report.exists()
+       
+        ipdb.set_trace()
+    
+        serializer.save(report=student_report.first())
+    
+    # def get(self, request: Request, id) -> Response:
+    #     report = Report.objects.get(id = id)
+    #     self.check_object_permissions(request, report)
+    #     serializer = ReportSerializer(report)
+        
+    #     if self.authentication_classes == False:
+    #                     return Response(
+    #                     {"detail": "Authentication credentials were not provided."}, status.HTTP_401_UNAUTHORIZED
+    #                     )
+        
+    #     return Response(serializer.data, status.HTTP_200_OK)
+
+    # def post(self, request: Request, student_id) -> Response:
+    #     student_obj = get_object_or_404(User, id=student_id)
+    #     user_report = Report.objects.filter(student_id = student_obj)
+    #     ipdb.set_trace()
+    #     self.check_object_permissions(request, user_report)
+    #     serializer = ReportSerializer(data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+    #     serializer.save(report = user_report)
+        
+    #     return Response(serializer.data, status.HTTP_201_CREATED)
 
 
 class ReportTrainerView(ListAPIView):

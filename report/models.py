@@ -1,8 +1,7 @@
 from django.db import models
-
-# Create your models here.
-
+import uuid
 class Report(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     title = models.CharField(max_length=50)
     description = models.CharField(max_length=250)
     date = models.DateTimeField(auto_now_add=True)

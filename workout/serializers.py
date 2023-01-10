@@ -40,7 +40,7 @@ class WorkoutSerializer(serializers.ModelSerializer):
             for exercise in exercises:
                 title = exercise.pop("exercise")
                 exercise_obj, created = Exercise.objects.get_or_create(
-                    title=title["title"]
+                    title=title["title"].lower()
                 )
 
                 Workout_exercise.objects.create(

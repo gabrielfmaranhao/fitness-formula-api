@@ -6,7 +6,16 @@ from django.db.models import Avg
 
 
 class UserSerializer(serializers.ModelSerializer):
-    cpf = serializers.CharField(min_length=11, max_length=11)
+    cpf = serializers.CharField(
+        min_length=11,
+        max_length=11,
+        validators=[
+            UniqueValidator(
+                queryset=User.objects.all(),
+                message="A user with that CPF already exists.",
+            )
+        ],
+    )
 
     class Meta:
         model = User

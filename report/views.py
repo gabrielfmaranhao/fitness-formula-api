@@ -9,15 +9,14 @@ from rest_framework.views import APIView, Request, Response, status
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
-class ReportUserView(generics.RetrieveAPIView):     
+class ReportUserView(ListAPIView):     
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
-
+    
     serializer_class = ReportSerializer
-    queryset = Report.objects.all()
 
-    def get_object(self):
-        return get_object_or_404(self.queryset, student_id=self.request.user)
+    def get_queryset(self):
+        return Report.objects.filter(student_id=self.request.user)
    
 class OneReportUserView(generics.ListCreateAPIView):
 

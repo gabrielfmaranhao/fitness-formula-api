@@ -9,7 +9,6 @@ class ReportSerializer(serializers.ModelSerializer):
             "title",
             "description",
             "date",
-            "created_at",
             "updated_at",
             "trainer_name",
             "trainer",

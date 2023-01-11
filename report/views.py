@@ -2,24 +2,23 @@ from rest_framework.generics import (ListAPIView)
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import Report
 from user.models import User
-from .permissions import IsTrainerReport, IsTrainer
+from .permissions import IsTrainer
 from .serializer import ReportSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView, Request, Response, status
 from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
 
-class ReportUserView(APIView):     
+class ReportUserView(generics.RetrieveAPIView):     
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsTrainerReport]
-    
-    def get(self, request: Request) -> Response:
-        reports = Report.objects.all()
+    permission_classes = [IsAuthenticated]
 
-        self.check_object_permissions(request, reports)
-        serializer = ReportSerializer(reports, many=True)
+    serializer_class = ReportSerializer
+    queryset = Report.objects.all()
 
-        return Response(serializer.data, status.HTTP_200_OK)
-
+    def get_object(self):
+        return get_object_or_404(self.queryset, student_id=self.request.user)
+   
 class OneReportUserView(generics.ListCreateAPIView):
 
     authentication_classes = [JWTAuthentication]
@@ -78,4 +77,4 @@ class OneReportView(APIView):
             report = get_object_or_404(Report, id=id)        
             report.delete()
 
-            return Response(204)
+            return Response(status=status.HTTP_204_NO_CONTENT)

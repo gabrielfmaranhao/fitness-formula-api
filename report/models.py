@@ -5,7 +5,6 @@ class Report(models.Model):
     title = models.CharField(max_length=50)
     description = models.CharField(max_length=250)
     date = models.DateTimeField(auto_now_add=True)
-    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     trainer = models.ForeignKey(
